@@ -11,6 +11,12 @@ MODES = {
     "4": ("SGD", "JPY")
 }
 
+# APIキーの読み込み（ローカルの config.py または環境変数）
+try:
+    from config import API_KEY  # ローカル専用
+except ImportError:
+    API_KEY = os.getenv("EXCHANGE_API_KEY")  # 環境変数対応
+
 def get_exchange_rates(api_key):
     """APIから日本円を基準としたレートを取得"""
     url = f"https://v6.exchangerate-api.com/v6/{api_key}/latest/JPY"
@@ -40,10 +46,8 @@ def fmt(value, currency):
         return f"{value:,.{PRECISION}f}"
 
 def main():
-    # 環境変数からAPIキーを取得
-    API_KEY = os.getenv("EXCHANGE_API_KEY")
     if not API_KEY:
-        print("❌ 環境変数 'EXCHANGE_API_KEY' が設定されていません。")
+        print("❌ APIキーが設定されていません。config.py または環境変数を確認してください。")
         return
 
     rates = get_exchange_rates(API_KEY)
